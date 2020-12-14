@@ -1,0 +1,25 @@
+{
+  "name": "module2project2",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "type": "module",
+  "dependencies": {
+    "express": "^4.17.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JerryLion91/Module2Project2.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/JerryLion91/Module2Project2/issues"
+  },
+  "homepage": "https://github.com/JerryLion91/Module2Project2#readme"
+}
