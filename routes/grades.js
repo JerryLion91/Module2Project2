@@ -55,11 +55,13 @@ router.put('/', async (req, res, next) => {
     let newGrade = req.body;
     const data = JSON.parse(await readFile('./grades.json'));
     const gradeIndex = data.grades.findIndex((grade) => {
-      return grade.id === parseInt(newGrade.id);
+      // sempre preencher base do parseInt(string,base);
+      return grade.id === parseInt(req.query.id, 10);
     });
     if (gradeIndex === -1) {
       throw new Error('Id nao encontrado');
     }
+    // fazer a verificacao individual da presenca de cada campo evita bagunca no dataBank
     newGrade = {
       id: newGrade.id,
       student: newGrade.student,
@@ -85,11 +87,13 @@ router.delete('/:id', async (req, res, next) => {
   try {
     const data = JSON.parse(await readFile('./grades.json'));
     const gradeIndex = data.grades.findIndex((grade) => {
-      return grade.id === parseInt(req.params.id);
+      // sempre preencher base do parseInt(string,base);
+      return grade.id === parseInt(req.query.id, 10);
     });
     if (gradeIndex === -1) {
       throw new Error('Id nao encontrado');
     }
+    // another way to remove is using arr.filter();
     data.grades.splice(gradeIndex, 1);
     await writeFile('./grades.json', JSON.stringify(data, null, 2));
     res.end();
@@ -107,7 +111,8 @@ router.get('/', async (req, res, next) => {
   try {
     const data = JSON.parse(await readFile('./grades.json'));
     const grade = data.grades.find((grade) => {
-      return grade.id === parseInt(req.query.id);
+      // sempre preencher base do parseInt(string,base);
+      return grade.id === parseInt(req.query.id, 10);
     });
     if (!grade) {
       throw new Error('Id nao encontrado');
@@ -124,6 +129,8 @@ router.get('/', async (req, res, next) => {
  * return sum(value)
  */
 router.get('/total', async (req, res, next) => {
+  // metodo 'GET' nao deveria usar body, e sim url
+  // para usar body, o metedo deveria ser 'POST'
   try {
     const filterValues = req.body;
     const data = JSON.parse(await readFile('./grades.json'));
@@ -133,8 +140,10 @@ router.get('/total', async (req, res, next) => {
       );
     });
     const totalGrade = data.grades.reduce((acc, grade) => {
-      return acc + parseInt(grade.value);
+      return acc + parseInt(grade.value, 10);
     }, 0);
+    // poderia retornar um JSON com um atributo "total":
+    // res.send({totalGrade});
     res.send(`${totalGrade}`);
   } catch (err) {
     next(err);
@@ -147,16 +156,22 @@ router.get('/total', async (req, res, next) => {
  * return sum(value)/length
  */
 router.get('/average', async (req, res, next) => {
+  // metodo 'GET' nao deveria usar body, e sim url
+  // para usar body, o metedo deveria ser 'POST'
   try {
     const filterValues = req.body;
     const data = JSON.parse(await readFile('./grades.json'));
     data.grades = data.grades.filter(({ subject, type }) => {
       return filterValues.subject === subject && filterValues.type === type;
     });
+    // if(!data.grades.length) poderia retornar o erro por nao encontrar nada
     const averageGrade =
       data.grades.reduce((acc, grade) => {
-        return acc + parseInt(grade.value);
+        return acc + parseInt(grade.value, 10);
       }, 0) / data.grades.length;
+
+    // poderia retornar um JSON com um atributo "total":
+    // res.send({averageGrade});
     res.send(`${averageGrade}`);
   } catch (err) {
     next(err);
@@ -169,6 +184,8 @@ router.get('/average', async (req, res, next) => {
  * return top > 3 grades
  */
 router.get('/top3', async (req, res, next) => {
+  // metodo 'GET' nao deveria usar body, e sim url
+  // para usar body, o metedo deveria ser 'POST'
   try {
     const filterValues = req.body;
     const data = JSON.parse(await readFile('./grades.json'));
@@ -179,6 +196,7 @@ router.get('/top3', async (req, res, next) => {
       })
       .sort((a, b) => b.value - a.value)
       .slice(0, 3);
+    // if(!data.grades.length) poderia retornar o erro por nao encontrar nada
     res.send(data);
   } catch (err) {
     next(err);
